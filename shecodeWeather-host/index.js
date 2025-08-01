@@ -19,7 +19,7 @@ let icon = document.querySelector("#icon");
   icon.innerHTML =`<img src="${response.data.condition.icon_url}" class="current-temperature-icon"/>`
 
 
- 
+ getForecast(response.data);
  }
 
 
@@ -82,3 +82,71 @@ let currentDate = new Date();
 currentDateELement.innerHTML = formatDate(currentDate);
 
 
+
+
+function getForecast(city){
+  let apiKey = "4c8b405tf587a604fdd58fod46b3f159";
+  let apiUrl = `https://api.shecodes.io/weather/v1/forecast?query=${city}&key=${apiKey}&units=metric`;
+  axios(apiUrl).then(displayForecast);
+   
+
+}
+
+
+function formatDay(timestamp) {
+  let date = new Date(timestamp *1000);
+  let days = [
+    "Sun",
+    "Mon",
+    "Tues",
+    "Wedn",
+    "Thurs",
+    "Fri",
+    "Sat"
+  ];
+
+  return days[date.getDay()];
+ 
+
+  
+}
+
+
+
+
+function displayForecast(response) {
+
+  
+  
+  let forecastHtml = "";
+
+  response.data.daily.forEach(function (day, index) {
+    if(index < 6) {
+    forecastHtml =
+    forecastHtml +
+    `
+      <div class="weather-forecast-below-day">
+          <div class="weather-forecast-below-date">${formatDay(day.time)}</div>
+          <div class="weather-forecast-below-icon">
+          <img src="${day.condition.icon_url}"  class="weather-forecast-below-icon"/>
+          </div>
+          <div class="weather-forecast-below-temperatures">
+            <div class="weather-forecast-below-temperatur">
+              <strong>${Math.round(day.temperature.maximum)}°C</strong>
+              <div><strong>
+                  ${Math.round(day.temperature.minimum)}°C
+                </strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+    `;
+    }
+  });
+
+  let forecastElement = document.querySelector("#forecast");
+  forecastElement.innerHTML = forecastHtml;
+}
+
+displayForecast(response.data);
